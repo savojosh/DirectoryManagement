@@ -63,8 +63,8 @@ def extract_zip(target, destination):
             zip.close()
         return True
 
-    except:
-        print("Failed to extract zip file: " + target)
+    except Exception as e:
+        print("Failed to extract zip file: " + target + "\n" + e)
 
     return False
 
@@ -82,8 +82,8 @@ def extract_tar(target, destination, structure):
             tar.close()
         return True
 
-    except:
-        print("Failed to extract tar file: " + target)
+    except Exception as e:
+        print("Failed to extract tar file: " + target + "\n" + e)
 
     return False
 
@@ -96,7 +96,7 @@ def remove_tar_structure(destination):
     structureToDelete = ""
 
     # Determines what directory structure to delete based on operating system directory structure features
-    
+
     if(destinationStructure[0].find(":") == -1): # if the operating system is not windows...
         structureToDelete = destinationStructure[0]
     else: # the operating system is windows...
