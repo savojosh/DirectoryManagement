@@ -8,10 +8,12 @@
 
 # Imports
 
+from operator import contains
 import os
 import sys
 import zipfile
 import tarfile
+import shutil
 
 def traverse_directory(directory):
     
@@ -35,7 +37,7 @@ def traverse_directory(directory):
                 didUnzip = extract_zip(contentPath, (directory + "/" + content.split(".")[0]))
                 if(didUnzip): os.remove(contentPath)
             elif(content.endswith(".tar") or content.endswith(".tgz") or content.endswith(".tar.gz")):
-                didUnzip = extract_tar(contentPath, (directory + "/" + content.split(".")[0]))
+                didUnzip = extract_tar(contentPath, (directory + "/" + content.split(".")[0]), False)
                 if(didUnzip): os.remove(contentPath)
 
         index = index + 1
@@ -55,10 +57,15 @@ def extract_zip(target, destination):
 
     return False
 
-def extract_tar(target, destination):
+def extract_tar(target, destination, structure):
+
+    # tar -xvf 1.tar --strip-components=<num_directories> <target_directory>
+
     try:
-        with tarfile.TarFile(target, "r") as tar:
+        with tarfile.open(target, "r") as tar:
             tar.extractall(destination)
+            if(not structure): 
+                remove_tar_structure(destination)
             tar.close()
         return True
 
@@ -67,4 +74,28 @@ def extract_tar(target, destination):
 
     return False
 
+def remove_tar_structure(destination):
+    destinationStructure = destination.split("/")
+    currentPath = destination
+    desiredPosition = destinationStructure[len(destinationStructure) - 1]
+    directoryPosition = ""
+    structureToDelete = ""
+
+    if(destinationStructure[0].find(":") == -1): # if the operating system is not windows...
+        structureToDelete = destinationStructure[0]
+    else: # the operating system is windows...
+        structureToDelete = destinationStructure[1]
+
+    while(desiredPosition != directoryPosition):
+
+        directoryPosition = os.listdir(currentPath)[0]
+        currentPath = currentPath + "/" + directoryPosition
+
+    for content in os.listdir(currentPath):
+
+        shutil.move((currentPath + "/" + content), (destination + "/" + content))
+
+    shutil.rmtree(destination + "/" + structureToDelete)
+
 traverse_directory("C:/Users/savojess/Documents/Joshua/TestFiles")
+                   #C:/Users/savojess/Documents/Joshua/TestFiles/tarmynuts/Users/savojess/Documents/Joshua/TestFiles/tarmynuts
