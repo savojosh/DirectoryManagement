@@ -9,7 +9,6 @@
 # Imports
 
 import os
-import sys
 import zipfile
 import tarfile
 import shutil
@@ -40,12 +39,12 @@ def traverse_directory(directory):
             # Determines if content file is compressed or archived
 
             if(content.endswith(".zip") or content.endswith(".7z")): # If compressed
-                didUnpack = extract_zip(contentPath, (directory + "/" + content.split(".")[0])) # extract_zip(target, destination)
+                didUnpack = extract_zip(contentPath, (directory + "/" + content.split(".")[0] + "_" + content.split(".")[1])) # extract_zip(target, destination)
                 if(didUnpack): os.remove(contentPath) # removes compressed file if successfully uncompressed
 
             elif(content.endswith(".tar") or content.endswith(".tgz") or content.endswith(".tar.gz")): # If archived
                 # TODO: change False to argv input
-                didUnpack = extract_tar(contentPath, (directory + "/" + content.split(".")[0]), False) # extract_tar(target, destination, want resulting structure?)
+                didUnpack = extract_tar(contentPath, (directory + "/" + content.split(".")[0] + "_" + content.split(".")[1]), True) # extract_tar(target, destination, want resulting structure?)
                 if(didUnpack): os.remove(contentPath) # removes archived file if successfully unarchived
 
         index = index + 1
